@@ -1,0 +1,9 @@
+{
+  "name": "Pump Controller Downlink",
+  "type": "DOWNLINK",
+  "debugMode": true,
+  "configuration": {
+    "encoder": "// Encode downlink data from incoming Rule Engine message\n\n// msg - JSON message payload downlink message json\n// msgType - type of message, for ex. 'ATTRIBUTES_UPDATED', 'POST_TELEMETRY_REQUEST', etc.\n// metadata - list of key-value pairs with additional data about the message\n// integrationMetadata - list of key-value pairs with additional data defined in Integration executing this converter\n\nconst commandByte = msg.command;\n\n// The data object will be sent to TTN as json via MQTT.\n// See \"Downlink Messages\" on the page https://www.thethingsnetwork.org/docs/applications/mqtt/api.html to see the fields required.\nvar data = {\n    port: 1, // Not functional, seems to be informational for the device to make decisions with.\n    confirmed: false, // Do not require an ACK from the device.\n    schedule: \"replace\", // Replace any existing queued downlink message.\n    payload_raw: btoa(commandByte) // Base64 encode the command byte.\n};\n\n// Result object with encoded downlink payload\nvar result = {\n\n    // downlink data content type: JSON, TEXT or BINARY (base64 format)\n    contentType: \"JSON\", // The data object is encoded as json when sending to TTN.\n\n    // downlink data\n    data: JSON.stringify(data), // The json payload to send to TTN\n\n    // Optional metadata object presented in key/value format\n    metadata: {\n            devId: \"pumpctrl-m0\" // Not sure how to figure this out from the function args. Must be the TTN device-id.\n    }\n};\n\nreturn result;"
+  },
+  "additionalInfo": null
+}

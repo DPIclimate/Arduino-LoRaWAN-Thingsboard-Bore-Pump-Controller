@@ -1,0 +1,18 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Pump_Sim.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="TBHost" Type="System.String" Scope="User">
+      <Value Profile="(Default)">YOUR-THINGSBOARD-HOST</Value>
+    </Setting>
+    <Setting Name="TBPort" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">9090</Value>
+    </Setting>
+    <Setting Name="LevelSensorAccessToken" Type="System.String" Scope="User">
+      <Value Profile="(Default)">xxxxxxxxxxxxxxxxxxxx</Value>
+    </Setting>
+    <Setting Name="PumpControllerAccessToken" Type="System.String" Scope="User">
+      <Value Profile="(Default)">yyyyyyyyyyyyyyyyyyyy</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

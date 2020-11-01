@@ -1,0 +1,463 @@
+{
+  "ruleChain": {
+    "additionalInfo": null,
+    "name": "Pump Controller Alarms",
+    "firstRuleNodeId": null,
+    "root": false,
+    "debugMode": true,
+    "configuration": null
+  },
+  "metadata": {
+    "firstNodeIndex": 19,
+    "nodes": [
+      {
+        "additionalInfo": {
+          "layoutX": 573,
+          "layoutY": 159
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsSwitchNode",
+        "name": "Check Status Flags",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "// Include a path for each potential alarm.\nreturn [\"boreLowLevel\", \"pumpOverload\", \"noFlow\", \"highPressure\", \"softStartFail\", \"controllerRestart\"];\n"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 854,
+          "layoutY": 56
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "checkBoreLowLevel",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return msg.boreLowLevel != 0;"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 1146,
+          "layoutY": 57
+        },
+        "type": "org.thingsboard.rule.engine.action.TbCreateAlarmNode",
+        "name": "raiseBoreLowLevel",
+        "debugMode": true,
+        "configuration": {
+          "alarmType": "Low Bore Level",
+          "alarmDetailsBuildJs": "var details = {};\nif (metadata.prevAlarmDetails) {\n    details = JSON.parse(metadata.prevAlarmDetails);\n}\nreturn details;",
+          "severity": "WARNING",
+          "propagate": false,
+          "useMessageAlarmData": false,
+          "relationTypes": []
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 1149,
+          "layoutY": 136
+        },
+        "type": "org.thingsboard.rule.engine.action.TbClearAlarmNode",
+        "name": "clearBoreLowLevel",
+        "debugMode": true,
+        "configuration": {
+          "alarmType": "Low Bore Level",
+          "alarmDetailsBuildJs": "var details = {};\nif (metadata.prevAlarmDetails) {\n    details = JSON.parse(metadata.prevAlarmDetails);\n}\nreturn details;"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 554,
+          "layoutY": 567,
+          "description": "This event is recorded regardless of the outcome of the command sent to the pump controller. It says the rules engine or dashboard requested the pump to start or stop but the result of that request won't be known until the next status message from the pump controller arrives."
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Make event msg",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "var newMsg = {\n    type: \"NOTIFICATION\",\n    mode: \"Automatic\",\n    text: \"Controller restart\"\n};\n\n// Have to set the type because the source message may be an RPC call and then the record\n// time series node will fail.\nreturn {msg: newMsg, metadata: metadata, msgType: \"POST_TELEMETRY_REQUEST\"};"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 560,
+          "layoutY": 663
+        },
+        "type": "org.thingsboard.rule.engine.telemetry.TbMsgTimeseriesNode",
+        "name": "Save event",
+        "debugMode": true,
+        "configuration": {
+          "defaultTTL": 0
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 557,
+          "layoutY": 476
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "checkControllerRestart",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return msg.controllerRestart != 0;"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 860,
+          "layoutY": 228
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "checkSoftStartFail",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return msg.softStartFail != 0;"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 1152,
+          "layoutY": 229
+        },
+        "type": "org.thingsboard.rule.engine.action.TbCreateAlarmNode",
+        "name": "raiseSoftStartFail",
+        "debugMode": true,
+        "configuration": {
+          "alarmType": "Soft Start Fail",
+          "alarmDetailsBuildJs": "var details = {};\nif (metadata.prevAlarmDetails) {\n    details = JSON.parse(metadata.prevAlarmDetails);\n}\nreturn details;",
+          "severity": "WARNING",
+          "propagate": false,
+          "useMessageAlarmData": false,
+          "relationTypes": []
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 1155,
+          "layoutY": 308
+        },
+        "type": "org.thingsboard.rule.engine.action.TbClearAlarmNode",
+        "name": "clearSoftStartFail",
+        "debugMode": true,
+        "configuration": {
+          "alarmType": "Soft Start Fail",
+          "alarmDetailsBuildJs": "var details = {};\nif (metadata.prevAlarmDetails) {\n    details = JSON.parse(metadata.prevAlarmDetails);\n}\nreturn details;"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 862,
+          "layoutY": 391
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "checkHighPressure",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return msg.highPressure != 0;"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 1154,
+          "layoutY": 392
+        },
+        "type": "org.thingsboard.rule.engine.action.TbCreateAlarmNode",
+        "name": "raiseHighPressure",
+        "debugMode": true,
+        "configuration": {
+          "alarmType": "High Pressure",
+          "alarmDetailsBuildJs": "var details = {};\nif (metadata.prevAlarmDetails) {\n    details = JSON.parse(metadata.prevAlarmDetails);\n}\nreturn details;",
+          "severity": "WARNING",
+          "propagate": false,
+          "useMessageAlarmData": false,
+          "relationTypes": []
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 1157,
+          "layoutY": 471
+        },
+        "type": "org.thingsboard.rule.engine.action.TbClearAlarmNode",
+        "name": "clearHighPressure",
+        "debugMode": true,
+        "configuration": {
+          "alarmType": "High Pressure",
+          "alarmDetailsBuildJs": "var details = {};\nif (metadata.prevAlarmDetails) {\n    details = JSON.parse(metadata.prevAlarmDetails);\n}\nreturn details;"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 868,
+          "layoutY": 539
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "checkpumpOverload",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return msg.pumpOverload != 0;"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 1160,
+          "layoutY": 540
+        },
+        "type": "org.thingsboard.rule.engine.action.TbCreateAlarmNode",
+        "name": "raisePumpOverload",
+        "debugMode": true,
+        "configuration": {
+          "alarmType": "Pump Overload",
+          "alarmDetailsBuildJs": "var details = {};\nif (metadata.prevAlarmDetails) {\n    details = JSON.parse(metadata.prevAlarmDetails);\n}\nreturn details;",
+          "severity": "WARNING",
+          "propagate": false,
+          "useMessageAlarmData": false,
+          "relationTypes": []
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 1163,
+          "layoutY": 619
+        },
+        "type": "org.thingsboard.rule.engine.action.TbClearAlarmNode",
+        "name": "clearPumpOverload",
+        "debugMode": true,
+        "configuration": {
+          "alarmType": "Pump Overload",
+          "alarmDetailsBuildJs": "var details = {};\nif (metadata.prevAlarmDetails) {\n    details = JSON.parse(metadata.prevAlarmDetails);\n}\nreturn details;"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 875,
+          "layoutY": 697
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "checkNoFlow",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return msg.noFlow != 0;"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 1167,
+          "layoutY": 698
+        },
+        "type": "org.thingsboard.rule.engine.action.TbCreateAlarmNode",
+        "name": "raiseNoFlow",
+        "debugMode": true,
+        "configuration": {
+          "alarmType": "No Flow",
+          "alarmDetailsBuildJs": "var details = {};\nif (metadata.prevAlarmDetails) {\n    details = JSON.parse(metadata.prevAlarmDetails);\n}\nreturn details;",
+          "severity": "WARNING",
+          "propagate": false,
+          "useMessageAlarmData": false,
+          "relationTypes": []
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 1170,
+          "layoutY": 777
+        },
+        "type": "org.thingsboard.rule.engine.action.TbClearAlarmNode",
+        "name": "clearNoFlow",
+        "debugMode": true,
+        "configuration": {
+          "alarmType": "No Flow",
+          "alarmDetailsBuildJs": "var details = {};\nif (metadata.prevAlarmDetails) {\n    details = JSON.parse(metadata.prevAlarmDetails);\n}\nreturn details;"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 272,
+          "layoutY": 239
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbMsgTypeSwitchNode",
+        "name": "Msg Type Switch",
+        "debugMode": true,
+        "configuration": {
+          "version": 0
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 263,
+          "layoutY": 359
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "Is Pump Controller",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return metadata.deviceType == \"Pump Controller\";"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 257,
+          "layoutY": 462
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbMsgTypeSwitchNode",
+        "name": "Active/Inactive Switch",
+        "debugMode": true,
+        "configuration": {
+          "version": 0
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 93,
+          "layoutY": 614
+        },
+        "type": "org.thingsboard.rule.engine.action.TbCreateAlarmNode",
+        "name": "raisePumpCtrlOffline",
+        "debugMode": true,
+        "configuration": {
+          "alarmType": "Pump Controller Offline",
+          "alarmDetailsBuildJs": "var details = {};\nif (metadata.prevAlarmDetails) {\n    details = JSON.parse(metadata.prevAlarmDetails);\n}\nreturn details;",
+          "severity": "WARNING",
+          "propagate": false,
+          "useMessageAlarmData": false,
+          "relationTypes": []
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 313,
+          "layoutY": 613
+        },
+        "type": "org.thingsboard.rule.engine.action.TbClearAlarmNode",
+        "name": "clearPumpCtrlOffline",
+        "debugMode": true,
+        "configuration": {
+          "alarmType": "Pump Controller Offline",
+          "alarmDetailsBuildJs": "var details = {};\nif (metadata.prevAlarmDetails) {\n    details = JSON.parse(metadata.prevAlarmDetails);\n}\nreturn details;"
+        }
+      }
+    ],
+    "connections": [
+      {
+        "fromIndex": 0,
+        "toIndex": 1,
+        "type": "boreLowLevel"
+      },
+      {
+        "fromIndex": 0,
+        "toIndex": 6,
+        "type": "controllerRestart"
+      },
+      {
+        "fromIndex": 0,
+        "toIndex": 10,
+        "type": "highPressure"
+      },
+      {
+        "fromIndex": 0,
+        "toIndex": 16,
+        "type": "noFlow"
+      },
+      {
+        "fromIndex": 0,
+        "toIndex": 13,
+        "type": "pumpOverload"
+      },
+      {
+        "fromIndex": 0,
+        "toIndex": 7,
+        "type": "softStartFail"
+      },
+      {
+        "fromIndex": 1,
+        "toIndex": 3,
+        "type": "False"
+      },
+      {
+        "fromIndex": 1,
+        "toIndex": 2,
+        "type": "True"
+      },
+      {
+        "fromIndex": 4,
+        "toIndex": 5,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 6,
+        "toIndex": 4,
+        "type": "True"
+      },
+      {
+        "fromIndex": 7,
+        "toIndex": 9,
+        "type": "False"
+      },
+      {
+        "fromIndex": 7,
+        "toIndex": 8,
+        "type": "True"
+      },
+      {
+        "fromIndex": 10,
+        "toIndex": 12,
+        "type": "False"
+      },
+      {
+        "fromIndex": 10,
+        "toIndex": 11,
+        "type": "True"
+      },
+      {
+        "fromIndex": 13,
+        "toIndex": 15,
+        "type": "False"
+      },
+      {
+        "fromIndex": 13,
+        "toIndex": 14,
+        "type": "True"
+      },
+      {
+        "fromIndex": 16,
+        "toIndex": 18,
+        "type": "False"
+      },
+      {
+        "fromIndex": 16,
+        "toIndex": 17,
+        "type": "True"
+      },
+      {
+        "fromIndex": 19,
+        "toIndex": 20,
+        "type": "Activity Event"
+      },
+      {
+        "fromIndex": 19,
+        "toIndex": 20,
+        "type": "Inactivity Event"
+      },
+      {
+        "fromIndex": 19,
+        "toIndex": 0,
+        "type": "Post telemetry"
+      },
+      {
+        "fromIndex": 20,
+        "toIndex": 21,
+        "type": "True"
+      },
+      {
+        "fromIndex": 21,
+        "toIndex": 23,
+        "type": "Activity Event"
+      },
+      {
+        "fromIndex": 21,
+        "toIndex": 22,
+        "type": "Inactivity Event"
+      }
+    ],
+    "ruleChainConnections": null
+  }
+}

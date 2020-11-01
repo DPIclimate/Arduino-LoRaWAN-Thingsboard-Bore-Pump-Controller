@@ -1,0 +1,274 @@
+{
+  "ruleChain": {
+    "additionalInfo": {
+      "description": "Send a command to a Pump Controller."
+    },
+    "name": "Pump Controller Downlink",
+    "firstRuleNodeId": null,
+    "root": false,
+    "debugMode": true,
+    "configuration": null
+  },
+  "metadata": {
+    "firstNodeIndex": 7,
+    "nodes": [
+      {
+        "additionalInfo": {
+          "layoutX": 550,
+          "layoutY": 41,
+          "description": "This event is recorded regardless of the outcome of the command sent to the pump controller. It says the rules engine or dashboard requested the pump to start or stop but the result of that request won't be known until the next status message from the pump controller arrives."
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Make event msg",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "var newMsg = {\n    type: \"NOTIFICATION\",\n    mode: msg.mode\n};\n\nif (msg.command == 0) {\n    newMsg.text = \"Pump off\";\n} else {\n    newMsg.text = \"Pump on\";\n}\n\n// Have to set the type because the source message may be an RPC call and then the record\n// time series node will fail.\nreturn {msg: newMsg, metadata: metadata, msgType: \"POST_TELEMETRY_REQUEST\"};"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 880,
+          "layoutY": 42
+        },
+        "type": "org.thingsboard.rule.engine.telemetry.TbMsgTimeseriesNode",
+        "name": "Save event",
+        "debugMode": true,
+        "configuration": {
+          "defaultTTL": 0
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "Send RPC command to WiFi pump controller",
+          "layoutX": 1124,
+          "layoutY": 170
+        },
+        "type": "org.thingsboard.rule.engine.rpc.TbSendRPCRequestNode",
+        "name": "WiFi-RPC",
+        "debugMode": false,
+        "configuration": {
+          "timeoutInSeconds": 1
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "Route the message to the protocol-appropriate RPC/downlink path.",
+          "layoutX": 550,
+          "layoutY": 244
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsSwitchNode",
+        "name": "Protocol Switch",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "// Assume LoRaWAN unless the device has a value in its\n// protocol attribute.\nvar protocol = \"lora\";\nif (metadata.shared_protocol) {\n    protocol = metadata.shared_protocol;\n}\n\nreturn [ protocol ];\n"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 848,
+          "layoutY": 168
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Xform Msg to RPC",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "// The dashboard is sending the value as a string so\n// we need to normalize things to a numeric 0 or 1.\nvar normalizedCmd = parseInt(msg.command);\nvar _timerOn = false;\nvar _timer = 0;\n\nif (normalizedCmd > 0) {\n    // IF we are sending a custom pump time\n    if (metadata.ss_timerType == 2) {\n        _timerOn = true;\n        _timer = metadata.ss_customPumpTimer;\n        // ELSE IF we are sending with the default(estimated) timer\n    } else if (metadata.ss_timerType == 1) {\n        _timerOn = true;\n        _timer = metadata.ss_fillTimer;\n    }\n}\n\n\n// This is the json that will be sent to the pump controller.\nvar newMsg = {\n    method: \"ignored\",\n    params: {\n        runPump: normalizedCmd,\n        timerOn: _timerOn,\n        timer: _timer\n    }\n}\n\nmetadata.oneway = true; // Don't expect a reply or ACK\n//metadata.originalMsg = msg; // Put the original message body into the metadata in case it's useful.\n\nreturn {\n    msg: newMsg,\n    metadata: metadata,\n    msgType: msgType\n};"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 1143,
+          "layoutY": 371
+        },
+        "type": "org.thingsboard.rule.engine.mqtt.TbMqttNode",
+        "name": "Downlink msg to TTN",
+        "debugMode": true,
+        "configuration": {
+          "topicPattern": "dt_test_app/devices/pumpctrl-m0/down",
+          "host": "thethings.meshed.com.au",
+          "port": 1883,
+          "connectTimeoutSec": 10,
+          "clientId": "wexrbertv",
+          "cleanSession": true,
+          "ssl": false,
+          "credentials": {
+            "type": "basic",
+            "username": "dt_test_app",
+            "password": "ttn-account-v2.OkvajEgHUAp7uSEyl44Li16v2kbmSUCyHituL-6bfWY"
+          }
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 850,
+          "layoutY": 371
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Xform Msg to TTN MQTT Downlink",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "/*\nMessage expected by TTN.\n\n{\n  \"port\": 1,                 // LoRaWAN FPort\n  \"confirmed\": false,        // Whether the downlink should be confirmed by the device\n  \"payload_raw\": \"AQIDBA==\", // Base64 encoded payload: [0x01, 0x02, 0x03, 0x04]\n  \"schedule\": \"replace\", // allowed values: \"replace\" (default), \"first\", \"last\"\n}\n*/\n\n// Variable for the payload_raw part of our message\nvar rawPayload;\n\n// IF we are sending a custom pump time\nif(metadata.ss_timerType == 2 && msg.command != 0){\n    rawPayload = uint16ToBase64(parseInt(metadata.ss_customPumpTimer), msg.command, 1);\n// ELSE IF we are sending with the default(estimated) timer\n}else if(metadata.ss_timerType == 1 && msg.command != 0){\n    rawPayload = uint16ToBase64(parseInt(metadata.ss_fillTimer), msg.command, 1);\n// ELSE we are sending the message with no timer\n}else{\n    rawPayload = msg.command == 0 ? \"AA==\" : \"AQ==\";\n}\n\ndlMsg = {\n    port: 1,\n    confirmed: true, // LoRaWAN is very unreliable. This feature exists, we need it, we may as well use it.\n    payload_raw: rawPayload, // Base64 encode the command byte. btoa not working.\n    schedule: \"replace\"\n};\n\nreturn {msg: dlMsg, metadata: metadata, msgType: msgType};\n\n// Function to convert an int to an unsigned int then convert to base64\nfunction uint16ToBase64(number, commandBit, timerBit){\n// Max allowed value is 600\nvar intToConvert = number > 600 ? 600 : number\n\n// Array of Base64 encoding characters\nvar base64abc = [\n\t\"A\", \"B\", \"C\", \"D\", \"E\", \"F\", \"G\", \"H\", \"I\", \"J\", \"K\", \"L\", \"M\",\n\t\"N\", \"O\", \"P\", \"Q\", \"R\", \"S\", \"T\", \"U\", \"V\", \"W\", \"X\", \"Y\", \"Z\",\n\t\"a\", \"b\", \"c\", \"d\", \"e\", \"f\", \"g\", \"h\", \"i\", \"j\", \"k\", \"l\", \"m\",\n\t\"n\", \"o\", \"p\", \"q\", \"r\", \"s\", \"t\", \"u\", \"v\", \"w\", \"x\", \"y\", \"z\",\n\t\"0\", \"1\", \"2\", \"3\", \"4\", \"5\", \"6\", \"7\", \"8\", \"9\", \"+\", \"/\"\n];\n\n// Get a string of binary for the unsigned int\nvar binaryString = (intToConvert).toString(2)\n// Add 0's to bring the string up to 16bits\nvar missingBits = 16 - binaryString.length\nfor(var i = 0; i < missingBits; i++){\n\tbinaryString = \"0\" + binaryString\n}\n/* Seperate out the String into 4 6-bit substrings, then convert each back to an int.  The first Char is always 0, then the first 2 characters of the second char are the timerBit then the commandBit */\nvar firstChar = 0;\nvar secondChar = parseInt(String(timerBit) + String(commandBit) + binaryString.substring(0,4),2);\nvar thirdChar = parseInt(binaryString.substring(4,10),2);\nvar fourthChar = parseInt(binaryString.substring(10,16),2);\n// Use the 3 int's as index's for the base64 array.  Add \"=\" to the end to round it out.\nreturn base64abc[firstChar] + base64abc[secondChar] + base64abc[thirdChar] + base64abc[fourthChar];\n}"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "Need a splitter here because the Input node won't send to two different nodes.",
+          "layoutX": 296,
+          "layoutY": 151
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "Splitter",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return true;"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 58,
+          "layoutY": 373
+        },
+        "type": "org.thingsboard.rule.engine.metadata.TbGetAttributesNode",
+        "name": "Get Protocol",
+        "debugMode": true,
+        "configuration": {
+          "clientAttributeNames": [],
+          "sharedAttributeNames": [
+            "protocol"
+          ],
+          "serverAttributeNames": [
+            "customPumpTimer",
+            "defaultPumpTimer",
+            "timerType",
+            "requestedPumpState",
+            "transmitStatus"
+          ],
+          "latestTsKeyNames": [],
+          "tellFailureIfAbsent": false,
+          "getLatestValueWithTs": false
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 308,
+          "layoutY": 309
+        },
+        "type": "org.thingsboard.rule.engine.metadata.TbGetDeviceAttrNode",
+        "name": "Get Tank Fill Time",
+        "debugMode": true,
+        "configuration": {
+          "clientAttributeNames": [],
+          "sharedAttributeNames": [],
+          "serverAttributeNames": [
+            "fillTimer"
+          ],
+          "latestTsKeyNames": [],
+          "tellFailureIfAbsent": true,
+          "getLatestValueWithTs": false,
+          "deviceRelationsQuery": {
+            "direction": "TO",
+            "maxLevel": 1,
+            "relationType": "Manages",
+            "deviceTypes": [
+              "default",
+              "Water/Fuel Depth Level"
+            ],
+            "fetchLastLevelOnly": false
+          }
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 841,
+          "layoutY": 542
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Set Transmit Status",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "// Set msgType to save attribute\nmsgType = \"POST_ATTRIBUTES_REQUEST\";\nvar newMsg = {};\n\nnewMsg.transmitStatus = 1;\nnewMsg.requestTime = new Date().getTime();\n\nreturn {msg: newMsg, metadata: metadata, msgType: msgType};"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 1147,
+          "layoutY": 539
+        },
+        "type": "org.thingsboard.rule.engine.telemetry.TbMsgAttributesNode",
+        "name": "Save Transmit Status",
+        "debugMode": true,
+        "configuration": {
+          "scope": "SERVER_SCOPE"
+        }
+      }
+    ],
+    "connections": [
+      {
+        "fromIndex": 0,
+        "toIndex": 1,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 3,
+        "toIndex": 6,
+        "type": "lora"
+      },
+      {
+        "fromIndex": 3,
+        "toIndex": 10,
+        "type": "lora"
+      },
+      {
+        "fromIndex": 3,
+        "toIndex": 4,
+        "type": "wifi"
+      },
+      {
+        "fromIndex": 3,
+        "toIndex": 10,
+        "type": "wifi"
+      },
+      {
+        "fromIndex": 4,
+        "toIndex": 2,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 6,
+        "toIndex": 5,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 7,
+        "toIndex": 0,
+        "type": "True"
+      },
+      {
+        "fromIndex": 7,
+        "toIndex": 8,
+        "type": "True"
+      },
+      {
+        "fromIndex": 8,
+        "toIndex": 9,
+        "type": "Failure"
+      },
+      {
+        "fromIndex": 8,
+        "toIndex": 9,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 9,
+        "toIndex": 3,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 10,
+        "toIndex": 11,
+        "type": "Success"
+      }
+    ],
+    "ruleChainConnections": null
+  }
+}

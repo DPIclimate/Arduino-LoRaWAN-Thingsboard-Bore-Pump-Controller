@@ -1,0 +1,251 @@
+{
+  "ruleChain": {
+    "additionalInfo": {
+      "description": "Check if the pump needs to be switched on or off based upon the water level reading."
+    },
+    "name": "Water Level Check",
+    "firstRuleNodeId": null,
+    "root": false,
+    "debugMode": true,
+    "configuration": null
+  },
+  "metadata": {
+    "firstNodeIndex": 5,
+    "nodes": [
+      {
+        "additionalInfo": {
+          "description": "Get the attributes & telemetry from the pump controller device controlled by the level sensor.",
+          "layoutX": 294,
+          "layoutY": 152
+        },
+        "type": "org.thingsboard.rule.engine.metadata.TbGetDeviceAttrNode",
+        "name": "GetAutoControlAttr",
+        "debugMode": true,
+        "configuration": {
+          "clientAttributeNames": [],
+          "sharedAttributeNames": [
+            "protocol"
+          ],
+          "serverAttributeNames": [
+            "lowLevel",
+            "highLevel",
+            "autoControl"
+          ],
+          "latestTsKeyNames": [
+            "pumpRunning"
+          ],
+          "tellFailureIfAbsent": false,
+          "getLatestValueWithTs": false,
+          "deviceRelationsQuery": {
+            "direction": "FROM",
+            "maxLevel": 1,
+            "relationType": "Manages",
+            "deviceTypes": [
+              "Pump Controller"
+            ],
+            "fetchLastLevelOnly": false
+          }
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "Test if pump needs to be switched on or off. The chain name ControlPump will be returned if the pump needs to be switched.",
+          "layoutX": 301,
+          "layoutY": 247
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsSwitchNode",
+        "name": "LevelCheck",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "// Note the device attributes are added to metadata with their name prefixed by \"ss_\",\n// but fields from the telemetry do not get a prefix.\n\n// End processing here if auto control is disabled.\n// The device attribute is defined as a boolean but the related device attribute\n// node puts it into the metadata as a string.\nif (metadata.ss_autoControl != \"true\") {\n    return [];\n}\n\nvar controlPumpLabel = \"Control Pump\";\nvar depthM = msg[\"Depth (m)\"];\n\nif (depthM <= metadata.ss_lowLevel && metadata.pumpRunning == \"0\") {\n    return [ controlPumpLabel ];\n}\n\nif (depthM >= metadata.ss_highLevel && metadata.pumpRunning == \"1\") {\n    return [ controlPumpLabel ];\n}\n\nreturn []; // Stop the rules chain by giving no label."
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "Change the originator of the message so the RPC call is sent to the pump controller, not the level sensor. Find the pump controller via the 'Controls' relationship.",
+          "layoutX": 588,
+          "layoutY": 355
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbChangeOriginatorNode",
+        "name": "Change originator to Pump Controller",
+        "debugMode": true,
+        "configuration": {
+          "originatorSource": "RELATED",
+          "relationsQuery": {
+            "direction": "FROM",
+            "maxLevel": 1,
+            "filters": [
+              {
+                "relationType": "Manages",
+                "entityTypes": [
+                  "DEVICE"
+                ]
+              }
+            ],
+            "fetchLastLevelOnly": false
+          }
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 977,
+          "layoutY": 229
+        },
+        "type": "org.thingsboard.rule.engine.telemetry.TbMsgAttributesNode",
+        "name": "Set Fill Time",
+        "debugMode": true,
+        "configuration": {
+          "scope": "SERVER_SCOPE"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 763,
+          "layoutY": 66
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Get Fill Time",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "var newMsg = {};\nvar newMsgType = \"POST_ATTRIBUTES_REQUEST\";\n/* Get the pump timer by getting the amount of the tank that is empty \n*  and divide by the fill rate per minute\n*/\n\nnewMsg.fillTimer = parseInt((2 - parseFloat(msg[\"Depth (m)\"])) / parseFloat(metadata.ss_tankFillRate));\nreturn {msg: newMsg, metadata: metadata, msgType: newMsgType};"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "Need a splitter here because the Input node won't send to two different nodes.",
+          "layoutX": 327,
+          "layoutY": 23
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "Splitter",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return true;"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 524,
+          "layoutY": 187
+        },
+        "type": "org.thingsboard.rule.engine.metadata.TbGetAttributesNode",
+        "name": "Get Tank Attributes",
+        "debugMode": true,
+        "configuration": {
+          "clientAttributeNames": [],
+          "sharedAttributeNames": [],
+          "serverAttributeNames": [
+            "tankFillRate"
+          ],
+          "latestTsKeyNames": [],
+          "tellFailureIfAbsent": true,
+          "getLatestValueWithTs": false
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 882,
+          "layoutY": 348,
+          "description": "Sets Server Attribute for Pump Controller after alarm."
+        },
+        "type": "org.thingsboard.rule.engine.telemetry.TbMsgAttributesNode",
+        "name": "Update Requested Pump State",
+        "debugMode": true,
+        "configuration": {
+          "scope": "SERVER_SCOPE"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 283,
+          "layoutY": 356
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Set Requested Pump State",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "// Set msgType to save attribute\nmsgType = \"POST_ATTRIBUTES_REQUEST\";\nvar newMsg = {};\n\n // Check if the pump needs to be turned on or off, set the requestedPumpState\nif (msg[\"Depth (m)\"] <= metadata.ss_lowLevel) {\n    newMsg.requestedPumpState = true;\n}else{\n   newMsg.requestedPumpState = false; \n}\n\nnewMsg.requestTime = new Date().getTime();\n\n// This will appear in the event log.\nnewMsg.mode = \"AUTOMATIC\";\n\nreturn {msg: newMsg, metadata: metadata, msgType: msgType};\n\n\n"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 899,
+          "layoutY": 471
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "XForm for Pump Controller Downlink",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "msg.command = msg.requestedPumpState ? 1 : 0;\nmsg.mode = \"AUTOMATIC\"; // This will appear in the event log.\nreturn {msg: msg, metadata: metadata, msgType: msgType};"
+        }
+      }
+    ],
+    "connections": [
+      {
+        "fromIndex": 0,
+        "toIndex": 1,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 1,
+        "toIndex": 8,
+        "type": "Control Pump"
+      },
+      {
+        "fromIndex": 2,
+        "toIndex": 7,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 4,
+        "toIndex": 3,
+        "type": "Failure"
+      },
+      {
+        "fromIndex": 4,
+        "toIndex": 3,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 5,
+        "toIndex": 0,
+        "type": "True"
+      },
+      {
+        "fromIndex": 5,
+        "toIndex": 6,
+        "type": "True"
+      },
+      {
+        "fromIndex": 6,
+        "toIndex": 4,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 7,
+        "toIndex": 9,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 8,
+        "toIndex": 2,
+        "type": "Success"
+      }
+    ],
+    "ruleChainConnections": [
+      {
+        "fromIndex": 9,
+        "targetRuleChainId": {
+          "entityType": "RULE_CHAIN",
+          "id": "f59b3450-942d-11ea-bfa6-5b9d9040e44c"
+        },
+        "additionalInfo": {
+          "layoutX": 1218,
+          "layoutY": 474,
+          "ruleChainNodeId": "rule-chain-node-12"
+        },
+        "type": "Success"
+      }
+    ]
+  }
+}

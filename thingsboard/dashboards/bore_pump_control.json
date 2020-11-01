@@ -1,0 +1,1509 @@
+{
+  "title": "Bore Pump Control",
+  "configuration": {
+    "description": "Bore pump control dashboard",
+    "widgets": {
+      "cd9d14fb-1078-d7a3-ef06-51b8763be6de": {
+        "isSystemType": true,
+        "bundleAlias": "input_widgets",
+        "typeAlias": "update_multiple_attributes",
+        "type": "latest",
+        "title": "New widget",
+        "sizeX": 6,
+        "sizeY": 5,
+        "config": {
+          "datasources": [
+            {
+              "type": "entity",
+              "dataKeys": [
+                {
+                  "name": "autoControl",
+                  "type": "attribute",
+                  "label": "Automatic Control Enabled",
+                  "color": "#2196f3",
+                  "settings": {
+                    "dataKeyType": "server",
+                    "dataKeyValueType": "booleanSwitch",
+                    "required": false,
+                    "isEditable": "editable",
+                    "dataKeyHidden": false,
+                    "step": 1
+                  },
+                  "_hash": 0.07566124409563879
+                },
+                {
+                  "name": "lowLevel",
+                  "type": "attribute",
+                  "label": "Switch pump on when tank level is below (m)",
+                  "color": "#4caf50",
+                  "settings": {
+                    "dataKeyType": "server",
+                    "dataKeyValueType": "double",
+                    "required": true,
+                    "isEditable": "editable",
+                    "dataKeyHidden": false,
+                    "step": 1
+                  },
+                  "_hash": 0.15021674777587823
+                },
+                {
+                  "name": "highLevel",
+                  "type": "attribute",
+                  "label": "Switch pump off when tank level is above (m)",
+                  "color": "#f44336",
+                  "settings": {
+                    "dataKeyType": "server",
+                    "dataKeyValueType": "string",
+                    "required": true,
+                    "isEditable": "editable",
+                    "dataKeyHidden": false,
+                    "step": 1
+                  },
+                  "_hash": 0.6119987952505851
+                }
+              ],
+              "entityAliasId": "43502bfb-e4ad-41e6-8142-0e7925669129"
+            }
+          ],
+          "timewindow": {
+            "realtime": {
+              "timewindowMs": 60000
+            }
+          },
+          "showTitle": true,
+          "backgroundColor": "rgba(217, 183, 183, 0)",
+          "color": "rgb(30, 31, 32)",
+          "padding": "8px",
+          "settings": {
+            "showActionButtons": false,
+            "showResultMessage": false,
+            "fieldsAlignment": "row",
+            "fieldsInRow": 1,
+            "groupTitle": "${entityName}"
+          },
+          "title": "Automatic Pump Control",
+          "dropShadow": false,
+          "enableFullscreen": false,
+          "enableDataExport": false,
+          "widgetStyle": {},
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "useDashboardTimewindow": true,
+          "showLegend": false,
+          "actions": {},
+          "showTitleIcon": false,
+          "titleIcon": null,
+          "iconColor": "rgba(0, 0, 0, 0.87)",
+          "iconSize": "24px",
+          "titleTooltip": "",
+          "displayTimewindow": true
+        },
+        "id": "cd9d14fb-1078-d7a3-ef06-51b8763be6de"
+      },
+      "44012c2e-8407-fefc-9e30-7cc4a3e9522c": {
+        "isSystemType": true,
+        "bundleAlias": "digital_gauges",
+        "typeAlias": "vertical_bar_justgage",
+        "type": "latest",
+        "title": "New widget",
+        "sizeX": 4,
+        "sizeY": 4,
+        "config": {
+          "datasources": [
+            {
+              "type": "entity",
+              "dataKeys": [
+                {
+                  "name": "Depth (m)",
+                  "type": "timeseries",
+                  "label": "Tank Level",
+                  "color": "#2196f3",
+                  "settings": {},
+                  "_hash": 0.529049523028759
+                }
+              ],
+              "entityAliasId": "082b5586-efdd-5c9b-6ad4-7d7bb023772c"
+            }
+          ],
+          "timewindow": {
+            "realtime": {
+              "timewindowMs": 60000
+            }
+          },
+          "showTitle": false,
+          "backgroundColor": "rgba(255, 255, 255, 0)",
+          "color": "rgb(30, 31, 32)",
+          "padding": "0px",
+          "settings": {
+            "maxValue": 2.5,
+            "minValue": 0,
+            "donutStartAngle": 90,
+            "showValue": true,
+            "showMinMax": true,
+            "gaugeWidthScale": 0.75,
+            "levelColors": [],
+            "titleFont": {
+              "family": "Roboto",
+              "size": 12,
+              "style": "normal",
+              "weight": "400",
+              "color": "#1e1f20"
+            },
+            "labelFont": {
+              "family": "Roboto",
+              "size": 8,
+              "style": "normal",
+              "weight": "400"
+            },
+            "valueFont": {
+              "family": "Roboto",
+              "style": "normal",
+              "weight": "400",
+              "size": 12,
+              "color": "#1e1f20"
+            },
+            "minMaxFont": {
+              "family": "Roboto",
+              "size": 8,
+              "style": "normal",
+              "weight": "400",
+              "color": "#666666"
+            },
+            "neonGlowBrightness": 0,
+            "dashThickness": 0,
+            "gaugeColor": "#eeeeee",
+            "showTitle": true,
+            "gaugeType": "verticalBar",
+            "timestampFormat": "yyyy-MM-dd HH:mm:ss",
+            "animation": false,
+            "animationDuration": 500,
+            "animationRule": "linear",
+            "title": "Depth (m)",
+            "unitTitle": "Metres",
+            "showUnitTitle": false,
+            "showTimestamp": true
+          },
+          "title": "depth",
+          "dropShadow": false,
+          "enableFullscreen": false,
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "showTitleIcon": false,
+          "titleIcon": null,
+          "iconColor": "rgba(0, 0, 0, 0.87)",
+          "iconSize": "24px",
+          "titleTooltip": "",
+          "widgetStyle": {},
+          "useDashboardTimewindow": true,
+          "displayTimewindow": true,
+          "showLegend": false,
+          "actions": {}
+        },
+        "id": "44012c2e-8407-fefc-9e30-7cc4a3e9522c"
+      },
+      "6aedc38c-87ba-a376-63c0-e79186f0a3e7": {
+        "isSystemType": false,
+        "bundleAlias": "custom_bore_pump",
+        "typeAlias": "timer_type_widget",
+        "type": "latest",
+        "title": "New widget",
+        "sizeX": 6,
+        "sizeY": 2,
+        "config": {
+          "datasources": [
+            {
+              "type": "entity",
+              "dataKeys": [
+                {
+                  "name": "timerType",
+                  "type": "attribute",
+                  "label": "timerType",
+                  "color": "#2196f3",
+                  "settings": {},
+                  "_hash": 0.5675767127269062
+                }
+              ],
+              "entityAliasId": "43502bfb-e4ad-41e6-8142-0e7925669129"
+            }
+          ],
+          "timewindow": {
+            "realtime": {
+              "timewindowMs": 60000
+            }
+          },
+          "showTitle": true,
+          "backgroundColor": "rgba(38, 56, 89, 0)",
+          "color": "rgb(30, 31, 32)",
+          "padding": "8px",
+          "settings": {},
+          "title": "Set Timer Type",
+          "dropShadow": false,
+          "enableFullscreen": false,
+          "widgetStyle": {},
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "useDashboardTimewindow": true,
+          "showLegend": false,
+          "actions": {},
+          "showTitleIcon": false,
+          "titleIcon": null,
+          "iconColor": "rgba(0, 0, 0, 0.87)",
+          "iconSize": "24px",
+          "titleTooltip": "",
+          "displayTimewindow": true
+        },
+        "id": "6aedc38c-87ba-a376-63c0-e79186f0a3e7"
+      },
+      "175f19be-de15-1639-4978-82f6ec126d91": {
+        "isSystemType": false,
+        "bundleAlias": "custom_bore_pump",
+        "typeAlias": "timer_display_2",
+        "type": "latest",
+        "title": "New widget",
+        "sizeX": 3,
+        "sizeY": 2,
+        "config": {
+          "datasources": [
+            {
+              "type": "entity",
+              "dataKeys": [
+                {
+                  "name": "fillTimer",
+                  "type": "attribute",
+                  "label": "fillTimer",
+                  "color": "#2196f3",
+                  "settings": {},
+                  "_hash": 0.08980147685208584
+                }
+              ],
+              "entityAliasId": "082b5586-efdd-5c9b-6ad4-7d7bb023772c"
+            }
+          ],
+          "timewindow": {
+            "realtime": {
+              "timewindowMs": 60000
+            }
+          },
+          "showTitle": true,
+          "backgroundColor": "rgba(38, 56, 89, 0)",
+          "color": "rgb(30, 31, 32)",
+          "padding": "8px",
+          "settings": {
+            "showResultMessage": true,
+            "showLabel": true
+          },
+          "title": "Est. Fill Timer",
+          "dropShadow": false,
+          "enableFullscreen": false,
+          "widgetStyle": {},
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "useDashboardTimewindow": true,
+          "showLegend": false,
+          "actions": {},
+          "showTitleIcon": false,
+          "titleIcon": null,
+          "iconColor": "rgba(0, 0, 0, 0.87)",
+          "iconSize": "24px",
+          "titleTooltip": "",
+          "displayTimewindow": true
+        },
+        "id": "175f19be-de15-1639-4978-82f6ec126d91"
+      },
+      "ee3adb12-67e4-2090-affd-328f739b9182": {
+        "isSystemType": false,
+        "bundleAlias": "custom_bore_pump",
+        "typeAlias": "timer_display",
+        "type": "latest",
+        "title": "New widget",
+        "sizeX": 3,
+        "sizeY": 2,
+        "config": {
+          "datasources": [
+            {
+              "type": "entity",
+              "dataKeys": [
+                {
+                  "name": "customPumpTimer",
+                  "type": "attribute",
+                  "label": "customPumpTimer",
+                  "color": "#2196f3",
+                  "settings": {},
+                  "_hash": 0.4502014027183763
+                }
+              ],
+              "entityAliasId": "43502bfb-e4ad-41e6-8142-0e7925669129"
+            }
+          ],
+          "timewindow": {
+            "realtime": {
+              "timewindowMs": 60000
+            }
+          },
+          "showTitle": true,
+          "backgroundColor": "rgba(38, 56, 89, 0)",
+          "color": "rgb(30, 31, 32)",
+          "padding": "8px",
+          "settings": {
+            "showResultMessage": true,
+            "showLabel": true
+          },
+          "title": "Custom Timer",
+          "dropShadow": false,
+          "enableFullscreen": false,
+          "widgetStyle": {},
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "useDashboardTimewindow": true,
+          "showLegend": false,
+          "actions": {},
+          "showTitleIcon": false,
+          "titleIcon": null,
+          "iconColor": "rgba(0, 0, 0, 0.87)",
+          "iconSize": "24px",
+          "titleTooltip": "",
+          "displayTimewindow": true
+        },
+        "id": "ee3adb12-67e4-2090-affd-328f739b9182"
+      },
+      "ca9abaea-8c3e-da68-3993-588a6f7a0d29": {
+        "isSystemType": true,
+        "bundleAlias": "control_widgets",
+        "typeAlias": "led_indicator",
+        "type": "rpc",
+        "title": "New widget",
+        "sizeX": 1,
+        "sizeY": 1,
+        "config": {
+          "targetDeviceAliases": [],
+          "showTitle": false,
+          "backgroundColor": "rgba(38, 56, 89, 0)",
+          "color": "rgba(0, 0, 0, 0.87)",
+          "padding": "0px",
+          "settings": {
+            "requestTimeout": 500,
+            "initialValue": false,
+            "ledColor": "#2e7d32",
+            "retrieveValueMethod": "timeseries",
+            "parseValueFunction": "return data == 1 ? true : false;",
+            "performCheckStatus": false,
+            "checkStatusMethod": "checkStatus",
+            "valueAttribute": "pumpRunning"
+          },
+          "title": "running",
+          "dropShadow": false,
+          "enableFullscreen": false,
+          "widgetStyle": {},
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "useDashboardTimewindow": true,
+          "showLegend": false,
+          "actions": {},
+          "decimals": 2,
+          "datasources": [],
+          "showTitleIcon": false,
+          "titleIcon": null,
+          "iconColor": "rgba(0, 0, 0, 0.87)",
+          "iconSize": "24px",
+          "titleTooltip": "",
+          "displayTimewindow": true,
+          "targetDeviceAliasIds": [
+            "43502bfb-e4ad-41e6-8142-0e7925669129"
+          ]
+        },
+        "id": "ca9abaea-8c3e-da68-3993-588a6f7a0d29"
+      },
+      "79bb7556-0d28-c435-aec7-17451bfae2bd": {
+        "isSystemType": true,
+        "bundleAlias": "control_widgets",
+        "typeAlias": "led_indicator",
+        "type": "rpc",
+        "title": "New widget",
+        "sizeX": 1,
+        "sizeY": 1,
+        "config": {
+          "targetDeviceAliases": [],
+          "showTitle": false,
+          "backgroundColor": "rgba(38, 56, 89, 0)",
+          "color": "rgba(0, 0, 0, 0.87)",
+          "padding": "0px",
+          "settings": {
+            "requestTimeout": 500,
+            "initialValue": false,
+            "ledColor": "#c62828",
+            "retrieveValueMethod": "timeseries",
+            "parseValueFunction": "return data == 1 ? true : false;",
+            "performCheckStatus": false,
+            "checkStatusMethod": "checkStatus",
+            "valueAttribute": "boreLowLevel"
+          },
+          "title": "lowlevel",
+          "dropShadow": false,
+          "enableFullscreen": false,
+          "widgetStyle": {},
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "useDashboardTimewindow": true,
+          "showLegend": false,
+          "actions": {},
+          "decimals": 2,
+          "datasources": [],
+          "showTitleIcon": false,
+          "titleIcon": null,
+          "iconColor": "rgba(0, 0, 0, 0.87)",
+          "iconSize": "24px",
+          "titleTooltip": "",
+          "displayTimewindow": true,
+          "targetDeviceAliasIds": [
+            "43502bfb-e4ad-41e6-8142-0e7925669129"
+          ]
+        },
+        "id": "79bb7556-0d28-c435-aec7-17451bfae2bd"
+      },
+      "e87cd3bb-7072-f1ac-def3-98aa3f9ed9a9": {
+        "isSystemType": true,
+        "bundleAlias": "control_widgets",
+        "typeAlias": "led_indicator",
+        "type": "rpc",
+        "title": "New widget",
+        "sizeX": 1,
+        "sizeY": 1,
+        "config": {
+          "targetDeviceAliases": [],
+          "showTitle": false,
+          "backgroundColor": "rgba(38, 56, 89, 0)",
+          "color": "rgba(0, 0, 0, 0.87)",
+          "padding": "0px",
+          "settings": {
+            "requestTimeout": 500,
+            "initialValue": false,
+            "ledColor": "#c62828",
+            "retrieveValueMethod": "timeseries",
+            "parseValueFunction": "return data == 1 ? true : false;",
+            "performCheckStatus": false,
+            "checkStatusMethod": "checkStatus",
+            "valueAttribute": "highPressure"
+          },
+          "title": "high pressure",
+          "dropShadow": false,
+          "enableFullscreen": false,
+          "widgetStyle": {},
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "useDashboardTimewindow": true,
+          "showLegend": false,
+          "actions": {},
+          "decimals": 2,
+          "datasources": [],
+          "showTitleIcon": false,
+          "titleIcon": null,
+          "iconColor": "rgba(0, 0, 0, 0.87)",
+          "iconSize": "24px",
+          "titleTooltip": "",
+          "displayTimewindow": true,
+          "targetDeviceAliasIds": [
+            "43502bfb-e4ad-41e6-8142-0e7925669129"
+          ]
+        },
+        "id": "e87cd3bb-7072-f1ac-def3-98aa3f9ed9a9"
+      },
+      "30318080-6e2d-a8d0-517d-4a459e182cbd": {
+        "isSystemType": true,
+        "bundleAlias": "control_widgets",
+        "typeAlias": "led_indicator",
+        "type": "rpc",
+        "title": "New widget",
+        "sizeX": 1,
+        "sizeY": 1,
+        "config": {
+          "targetDeviceAliases": [],
+          "showTitle": false,
+          "backgroundColor": "rgba(38, 56, 89, 0)",
+          "color": "rgba(0, 0, 0, 0.87)",
+          "padding": "0px",
+          "settings": {
+            "requestTimeout": 500,
+            "initialValue": false,
+            "ledColor": "#c62828",
+            "retrieveValueMethod": "timeseries",
+            "parseValueFunction": "return data == 1 ? true : false;",
+            "performCheckStatus": false,
+            "checkStatusMethod": "checkStatus",
+            "valueAttribute": "noFlow"
+          },
+          "title": "no flow",
+          "dropShadow": false,
+          "enableFullscreen": false,
+          "widgetStyle": {},
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "useDashboardTimewindow": true,
+          "showLegend": false,
+          "actions": {},
+          "decimals": 2,
+          "datasources": [],
+          "showTitleIcon": false,
+          "titleIcon": null,
+          "iconColor": "rgba(0, 0, 0, 0.87)",
+          "iconSize": "24px",
+          "titleTooltip": "",
+          "displayTimewindow": true,
+          "targetDeviceAliasIds": [
+            "43502bfb-e4ad-41e6-8142-0e7925669129"
+          ]
+        },
+        "id": "30318080-6e2d-a8d0-517d-4a459e182cbd"
+      },
+      "a5cc5b3b-1151-b6dd-a064-84f0b0903b6c": {
+        "isSystemType": true,
+        "bundleAlias": "control_widgets",
+        "typeAlias": "led_indicator",
+        "type": "rpc",
+        "title": "New widget",
+        "sizeX": 1,
+        "sizeY": 1,
+        "config": {
+          "targetDeviceAliases": [],
+          "showTitle": false,
+          "backgroundColor": "rgba(38, 56, 89, 0)",
+          "color": "rgba(0, 0, 0, 0.87)",
+          "padding": "0px",
+          "settings": {
+            "requestTimeout": 500,
+            "initialValue": false,
+            "ledColor": "#c62828",
+            "retrieveValueMethod": "timeseries",
+            "parseValueFunction": "return data == 1 ? true : false;",
+            "performCheckStatus": false,
+            "checkStatusMethod": "checkStatus",
+            "valueAttribute": "pumpOverload"
+          },
+          "title": "overload",
+          "dropShadow": false,
+          "enableFullscreen": false,
+          "widgetStyle": {},
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "useDashboardTimewindow": true,
+          "showLegend": false,
+          "actions": {},
+          "decimals": 2,
+          "datasources": [],
+          "showTitleIcon": false,
+          "titleIcon": null,
+          "iconColor": "rgba(0, 0, 0, 0.87)",
+          "iconSize": "24px",
+          "titleTooltip": "",
+          "displayTimewindow": true,
+          "targetDeviceAliasIds": [
+            "43502bfb-e4ad-41e6-8142-0e7925669129"
+          ]
+        },
+        "id": "a5cc5b3b-1151-b6dd-a064-84f0b0903b6c"
+      },
+      "9582d3f4-1db4-b70a-38f4-f7c1eeacbf4c": {
+        "isSystemType": true,
+        "bundleAlias": "control_widgets",
+        "typeAlias": "led_indicator",
+        "type": "rpc",
+        "title": "New widget",
+        "sizeX": 1,
+        "sizeY": 1,
+        "config": {
+          "targetDeviceAliases": [],
+          "showTitle": false,
+          "backgroundColor": "rgba(38, 56, 89, 0)",
+          "color": "rgba(0, 0, 0, 0.87)",
+          "padding": "0px",
+          "settings": {
+            "requestTimeout": 500,
+            "initialValue": false,
+            "ledColor": "#c62828",
+            "valueAttribute": "softStartFail",
+            "retrieveValueMethod": "timeseries",
+            "parseValueFunction": "return data == 1 ? true : false;",
+            "performCheckStatus": false,
+            "checkStatusMethod": "checkStatus"
+          },
+          "title": "ssf",
+          "dropShadow": false,
+          "enableFullscreen": false,
+          "widgetStyle": {},
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "useDashboardTimewindow": true,
+          "showLegend": false,
+          "actions": {},
+          "decimals": 2,
+          "datasources": [],
+          "showTitleIcon": false,
+          "titleIcon": null,
+          "iconColor": "rgba(0, 0, 0, 0.87)",
+          "iconSize": "24px",
+          "titleTooltip": "",
+          "displayTimewindow": true,
+          "targetDeviceAliasIds": [
+            "43502bfb-e4ad-41e6-8142-0e7925669129"
+          ]
+        },
+        "id": "9582d3f4-1db4-b70a-38f4-f7c1eeacbf4c"
+      },
+      "540d09e7-4d86-4895-12cb-4d6e9a90f77e": {
+        "isSystemType": true,
+        "bundleAlias": "cards",
+        "typeAlias": "html_card",
+        "type": "static",
+        "title": "New widget",
+        "sizeX": 2,
+        "sizeY": 1,
+        "config": {
+          "datasources": [],
+          "timewindow": {
+            "realtime": {
+              "timewindowMs": 60000
+            }
+          },
+          "showTitle": false,
+          "backgroundColor": "rgba(38, 56, 89, 0)",
+          "color": "rgb(30, 31, 32)",
+          "padding": "8px",
+          "settings": {
+            "cardHtml": "<div class='card'>Running</div>",
+            "cardCss": ".card {\n    font-weight: 400;\n    font-size: 16px;\n    padding-top: 16px;\n    color: rgb(30, 31, 32);\n    display: flex;\n    align-items: center;\n    justify-content: right;\n}"
+          },
+          "title": "New HTML Card",
+          "dropShadow": false,
+          "showTitleIcon": false,
+          "titleIcon": null,
+          "iconColor": "rgba(0, 0, 0, 0.87)",
+          "iconSize": "24px",
+          "titleTooltip": "",
+          "enableFullscreen": false,
+          "widgetStyle": {},
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "useDashboardTimewindow": true,
+          "displayTimewindow": true,
+          "showLegend": false,
+          "actions": {}
+        },
+        "id": "540d09e7-4d86-4895-12cb-4d6e9a90f77e"
+      },
+      "6d22612c-61f4-73e6-03f6-dc8e35b21090": {
+        "isSystemType": true,
+        "bundleAlias": "cards",
+        "typeAlias": "html_card",
+        "type": "static",
+        "title": "New widget",
+        "sizeX": 3,
+        "sizeY": 1,
+        "config": {
+          "datasources": [],
+          "timewindow": {
+            "realtime": {
+              "timewindowMs": 60000
+            }
+          },
+          "showTitle": false,
+          "backgroundColor": "rgba(38, 56, 89, 0)",
+          "color": "rgba(0, 0, 0, 0.87)",
+          "padding": "8px",
+          "settings": {
+            "cardHtml": "<div class='card'>Low Level</div>",
+            "cardCss": ".card {\n    font-weight: 400;\n    font-size: 16px;\n    padding-top: 16px;\n    color: rgb(30, 31, 32);\n    display: flex;\n    align-items: center;\n    justify-content: right;\n}"
+          },
+          "title": "New HTML Card",
+          "dropShadow": false,
+          "showTitleIcon": false,
+          "titleIcon": null,
+          "iconColor": "rgba(0, 0, 0, 0.87)",
+          "iconSize": "24px",
+          "titleTooltip": "",
+          "enableFullscreen": false,
+          "widgetStyle": {},
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "useDashboardTimewindow": true,
+          "displayTimewindow": true,
+          "showLegend": false,
+          "actions": {}
+        },
+        "id": "6d22612c-61f4-73e6-03f6-dc8e35b21090"
+      },
+      "78e4b962-a7bd-bd49-155d-3326898ac7dd": {
+        "isSystemType": true,
+        "bundleAlias": "cards",
+        "typeAlias": "html_card",
+        "type": "static",
+        "title": "New widget",
+        "sizeX": 3,
+        "sizeY": 1,
+        "config": {
+          "datasources": [],
+          "timewindow": {
+            "realtime": {
+              "timewindowMs": 60000
+            }
+          },
+          "showTitle": false,
+          "backgroundColor": "rgba(38, 56, 89, 0)",
+          "color": "rgba(0, 0, 0, 0.87)",
+          "padding": "8px",
+          "settings": {
+            "cardHtml": "<div class='card'>High Pressure</div>",
+            "cardCss": ".card {\n    font-weight: 400;\n    font-size: 16px;\n    padding-top: 16px;\n    color: rgb(30, 31, 32);\n    display: flex;\n    align-items: center;\n    justify-content: right;\n}"
+          },
+          "title": "New HTML Card",
+          "dropShadow": false,
+          "showTitleIcon": false,
+          "titleIcon": null,
+          "iconColor": "rgba(0, 0, 0, 0.87)",
+          "iconSize": "24px",
+          "titleTooltip": "",
+          "enableFullscreen": false,
+          "widgetStyle": {},
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "useDashboardTimewindow": true,
+          "displayTimewindow": true,
+          "showLegend": false,
+          "actions": {}
+        },
+        "id": "78e4b962-a7bd-bd49-155d-3326898ac7dd"
+      },
+      "f0e95403-4b76-3457-5c92-6107ac197545": {
+        "isSystemType": true,
+        "bundleAlias": "cards",
+        "typeAlias": "html_card",
+        "type": "static",
+        "title": "New widget",
+        "sizeX": 2,
+        "sizeY": 1,
+        "config": {
+          "datasources": [],
+          "timewindow": {
+            "realtime": {
+              "timewindowMs": 60000
+            }
+          },
+          "showTitle": false,
+          "backgroundColor": "rgba(38, 56, 89, 0)",
+          "color": "rgba(0, 0, 0, 0.87)",
+          "padding": "8px",
+          "settings": {
+            "cardHtml": "<div class='card'>No Flow</div>",
+            "cardCss": ".card {\n    font-weight: 400;\n    font-size: 16px;\n    padding-top: 16px;\n    color: rgb(30, 31, 32);\n    display: flex;\n    align-items: center;\n    justify-content: right;\n}"
+          },
+          "title": "New HTML Card",
+          "dropShadow": false,
+          "showTitleIcon": false,
+          "titleIcon": null,
+          "iconColor": "rgba(0, 0, 0, 0.87)",
+          "iconSize": "24px",
+          "titleTooltip": "",
+          "enableFullscreen": false,
+          "widgetStyle": {},
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "useDashboardTimewindow": true,
+          "displayTimewindow": true,
+          "showLegend": false,
+          "actions": {},
+          "margin": ""
+        },
+        "id": "f0e95403-4b76-3457-5c92-6107ac197545"
+      },
+      "1dcf1783-cac0-02a6-b2bb-35a3092cf241": {
+        "isSystemType": true,
+        "bundleAlias": "cards",
+        "typeAlias": "html_card",
+        "type": "static",
+        "title": "New widget",
+        "sizeX": 2,
+        "sizeY": 1,
+        "config": {
+          "datasources": [],
+          "timewindow": {
+            "realtime": {
+              "timewindowMs": 60000
+            }
+          },
+          "showTitle": false,
+          "backgroundColor": "rgba(38, 56, 89, 0)",
+          "color": "rgba(0, 0, 0, 0.87)",
+          "padding": "8px",
+          "settings": {
+            "cardHtml": "<div class='card'>Overload</div>",
+            "cardCss": ".card {\n    font-weight: 400;\n    font-size: 16px;\n    padding-top: 16px;\n    color: rgb(30, 31, 32);\n    display: flex;\n    align-items: center;\n    justify-content: right;\n}"
+          },
+          "title": "New HTML Card",
+          "dropShadow": false,
+          "showTitleIcon": false,
+          "titleIcon": null,
+          "iconColor": "rgba(0, 0, 0, 0.87)",
+          "iconSize": "24px",
+          "titleTooltip": "",
+          "enableFullscreen": false,
+          "widgetStyle": {},
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "useDashboardTimewindow": true,
+          "displayTimewindow": true,
+          "showLegend": false,
+          "actions": {}
+        },
+        "id": "1dcf1783-cac0-02a6-b2bb-35a3092cf241"
+      },
+      "1c0b8c60-9fed-f434-fb0c-9a795ed5eb34": {
+        "isSystemType": true,
+        "bundleAlias": "cards",
+        "typeAlias": "html_card",
+        "type": "static",
+        "title": "New widget",
+        "sizeX": 3,
+        "sizeY": 1,
+        "config": {
+          "datasources": [],
+          "timewindow": {
+            "realtime": {
+              "timewindowMs": 60000
+            }
+          },
+          "showTitle": false,
+          "backgroundColor": "rgba(38, 56, 89, 0)",
+          "color": "rgba(0, 0, 0, 0.87)",
+          "padding": "8px",
+          "settings": {
+            "cardHtml": "<div class='card'>Soft Start Fail</div>",
+            "cardCss": ".card {\n    font-weight: 400;\n    font-size: 16px;\n    padding-top: 16px;\n    color: rgb(30, 31, 32);\n    display: flex;\n    align-items: center;\n    justify-content: right;\n}"
+          },
+          "title": "New HTML Card",
+          "dropShadow": false,
+          "showTitleIcon": false,
+          "titleIcon": null,
+          "iconColor": "rgba(0, 0, 0, 0.87)",
+          "iconSize": "24px",
+          "titleTooltip": "",
+          "enableFullscreen": false,
+          "widgetStyle": {},
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "useDashboardTimewindow": true,
+          "displayTimewindow": true,
+          "showLegend": false,
+          "actions": {}
+        },
+        "id": "1c0b8c60-9fed-f434-fb0c-9a795ed5eb34"
+      },
+      "5572b5a0-73b9-7f12-c214-ac210e0a42dc": {
+        "isSystemType": false,
+        "bundleAlias": "custom_bore_pump",
+        "typeAlias": "custom_transmit_status",
+        "type": "latest",
+        "title": "New widget",
+        "sizeX": 6,
+        "sizeY": 1,
+        "config": {
+          "datasources": [
+            {
+              "type": "entity",
+              "dataKeys": [
+                {
+                  "name": "transmitStatus",
+                  "type": "attribute",
+                  "label": "transmitStatus",
+                  "color": "#2196f3",
+                  "settings": {},
+                  "_hash": 0.7428745664264089
+                }
+              ],
+              "entityAliasId": "43502bfb-e4ad-41e6-8142-0e7925669129"
+            }
+          ],
+          "timewindow": {
+            "realtime": {
+              "timewindowMs": 60000
+            }
+          },
+          "showTitle": false,
+          "backgroundColor": "rgba(198, 197, 197, 0)",
+          "color": "rgba(0, 0, 0, 0.87)",
+          "padding": "12px",
+          "settings": {},
+          "title": "New Custom Transmit Status",
+          "dropShadow": false,
+          "enableFullscreen": false,
+          "widgetStyle": {},
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "useDashboardTimewindow": true,
+          "showLegend": false,
+          "actions": {},
+          "showTitleIcon": false,
+          "titleIcon": null,
+          "iconColor": "rgba(0, 0, 0, 0.87)",
+          "iconSize": "24px",
+          "titleTooltip": "",
+          "displayTimewindow": true
+        },
+        "id": "5572b5a0-73b9-7f12-c214-ac210e0a42dc"
+      },
+      "eedcd51c-294d-7096-6cae-55a630a2a1a1": {
+        "isSystemType": false,
+        "bundleAlias": "custom_bore_pump",
+        "typeAlias": "custom_pump_switch",
+        "type": "latest",
+        "title": "New widget",
+        "sizeX": 6,
+        "sizeY": 3,
+        "config": {
+          "datasources": [
+            {
+              "type": "entity",
+              "dataKeys": [
+                {
+                  "name": "requestedPumpState",
+                  "type": "attribute",
+                  "label": "requestedPumpState",
+                  "color": "#2196f3",
+                  "settings": {},
+                  "_hash": 0.69481464491626
+                }
+              ],
+              "entityAliasId": "43502bfb-e4ad-41e6-8142-0e7925669129"
+            }
+          ],
+          "timewindow": {
+            "realtime": {
+              "timewindowMs": 60000
+            }
+          },
+          "showTitle": true,
+          "backgroundColor": "rgba(255, 255, 255, 0)",
+          "color": "rgba(0, 0, 0, 0.87)",
+          "padding": "8px",
+          "settings": {
+            "showResultMessage": true
+          },
+          "title": "Manual Pump Control",
+          "dropShadow": false,
+          "enableFullscreen": false,
+          "widgetStyle": {},
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "useDashboardTimewindow": true,
+          "showLegend": false,
+          "actions": {},
+          "showTitleIcon": false,
+          "titleIcon": null,
+          "iconColor": "rgba(0, 0, 0, 0.87)",
+          "iconSize": "24px",
+          "titleTooltip": "",
+          "displayTimewindow": true
+        },
+        "id": "eedcd51c-294d-7096-6cae-55a630a2a1a1"
+      },
+      "440541c2-0f22-fe52-1743-78772ffe8330": {
+        "isSystemType": true,
+        "bundleAlias": "cards",
+        "typeAlias": "timeseries_table",
+        "type": "timeseries",
+        "title": "New widget",
+        "sizeX": 8,
+        "sizeY": 6.5,
+        "config": {
+          "datasources": [
+            {
+              "type": "entity",
+              "dataKeys": [
+                {
+                  "name": "mode",
+                  "type": "timeseries",
+                  "label": "Mode",
+                  "color": "#2196f3",
+                  "settings": {
+                    "useCellStyleFunction": false,
+                    "useCellContentFunction": false
+                  },
+                  "_hash": 0.3757244842076326
+                },
+                {
+                  "name": "text",
+                  "type": "timeseries",
+                  "label": "Event",
+                  "color": "#4caf50",
+                  "settings": {
+                    "useCellStyleFunction": false,
+                    "useCellContentFunction": false
+                  },
+                  "_hash": 0.9460073778186336
+                }
+              ],
+              "entityAliasId": "43502bfb-e4ad-41e6-8142-0e7925669129"
+            }
+          ],
+          "timewindow": {
+            "realtime": {
+              "interval": 1000,
+              "timewindowMs": 604800000
+            },
+            "aggregation": {
+              "type": "NONE",
+              "limit": 200
+            },
+            "hideAggregation": true,
+            "hideAggInterval": true
+          },
+          "showTitle": true,
+          "backgroundColor": "rgba(255, 255, 255, 0)",
+          "color": "rgba(0, 0, 0, 0.87)",
+          "padding": "8px",
+          "settings": {
+            "showTimestamp": true,
+            "displayPagination": true,
+            "defaultPageSize": 10,
+            "hideEmptyLines": false
+          },
+          "title": "Pump Controller Events",
+          "dropShadow": false,
+          "enableFullscreen": false,
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "useDashboardTimewindow": false,
+          "showLegend": false,
+          "widgetStyle": {},
+          "actions": {},
+          "showTitleIcon": false,
+          "titleIcon": null,
+          "iconColor": "rgba(0, 0, 0, 0.87)",
+          "iconSize": "24px",
+          "titleTooltip": "",
+          "displayTimewindow": false
+        },
+        "id": "440541c2-0f22-fe52-1743-78772ffe8330"
+      },
+      "6bb4abce-eae2-6312-d613-210118d6a06e": {
+        "isSystemType": true,
+        "bundleAlias": "alarm_widgets",
+        "typeAlias": "alarms_table",
+        "type": "alarm",
+        "title": "New widget",
+        "sizeX": 8,
+        "sizeY": 6,
+        "config": {
+          "timewindow": {
+            "realtime": {
+              "interval": 1000,
+              "timewindowMs": 604800000
+            },
+            "aggregation": {
+              "type": "NONE",
+              "limit": 200
+            }
+          },
+          "showTitle": true,
+          "backgroundColor": "rgba(255, 255, 255, 0)",
+          "color": "rgba(0, 0, 0, 0.87)",
+          "padding": "4px",
+          "settings": {
+            "enableSelection": true,
+            "enableSearch": false,
+            "displayDetails": false,
+            "allowAcknowledgment": true,
+            "allowClear": true,
+            "displayPagination": false,
+            "defaultPageSize": 10,
+            "defaultSortOrder": "-createdTime",
+            "enableSelectColumnDisplay": true,
+            "enableStatusFilter": true,
+            "alarmsTitle": "Pump Controller Alarms"
+          },
+          "title": "Pump Controller Alarms",
+          "dropShadow": false,
+          "enableFullscreen": false,
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400,
+            "padding": "5px 10px 5px 10px"
+          },
+          "useDashboardTimewindow": false,
+          "showLegend": false,
+          "alarmSource": {
+            "type": "entity",
+            "dataKeys": [
+              {
+                "name": "createdTime",
+                "type": "alarm",
+                "label": "Created time",
+                "color": "#2196f3",
+                "settings": {},
+                "_hash": 0.752166282699484
+              },
+              {
+                "name": "type",
+                "type": "alarm",
+                "label": "Type",
+                "color": "#f44336",
+                "settings": {},
+                "_hash": 0.4267799153798185
+              },
+              {
+                "name": "status",
+                "type": "alarm",
+                "label": "Status",
+                "color": "#607d8b",
+                "settings": {},
+                "_hash": 0.22300887716238993
+              }
+            ],
+            "entityAliasId": "43502bfb-e4ad-41e6-8142-0e7925669129",
+            "name": "alarms"
+          },
+          "alarmSearchStatus": "ANY",
+          "alarmsPollingInterval": 5,
+          "showTitleIcon": false,
+          "titleIcon": null,
+          "iconColor": "rgba(0, 0, 0, 0.87)",
+          "iconSize": "24px",
+          "titleTooltip": "",
+          "widgetStyle": {},
+          "displayTimewindow": false,
+          "actions": {},
+          "datasources": [],
+          "alarmsMaxCountLoad": 0,
+          "alarmsFetchSize": 100
+        },
+        "id": "6bb4abce-eae2-6312-d613-210118d6a06e"
+      },
+      "3956de0b-9eda-b249-7428-28e1c561316d": {
+        "isSystemType": false,
+        "bundleAlias": "custom_bore_pump",
+        "typeAlias": "customer_timer_entry",
+        "type": "latest",
+        "title": "New widget",
+        "sizeX": 6,
+        "sizeY": 2,
+        "config": {
+          "datasources": [
+            {
+              "type": "entity",
+              "dataKeys": [
+                {
+                  "name": "customPumpTimer",
+                  "type": "attribute",
+                  "label": "customPumpTimer",
+                  "color": "#2196f3",
+                  "settings": {},
+                  "_hash": 0.2528603221850272
+                }
+              ],
+              "entityAliasId": "43502bfb-e4ad-41e6-8142-0e7925669129"
+            }
+          ],
+          "timewindow": {
+            "realtime": {
+              "timewindowMs": 60000
+            }
+          },
+          "showTitle": false,
+          "backgroundColor": "rgba(255, 255, 255, 0)",
+          "color": "rgba(0, 0, 0, 0.87)",
+          "padding": "8px",
+          "settings": {
+            "showResultMessage": true,
+            "showLabel": true,
+            "labelValue": "Update Custom Pump Time (Mins)"
+          },
+          "title": "New Customer Timer Entry",
+          "dropShadow": false,
+          "enableFullscreen": false,
+          "widgetStyle": {},
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "useDashboardTimewindow": true,
+          "showLegend": false,
+          "actions": {},
+          "showTitleIcon": false,
+          "titleIcon": null,
+          "iconColor": "rgba(0, 0, 0, 0.87)",
+          "iconSize": "24px",
+          "titleTooltip": "",
+          "displayTimewindow": true
+        },
+        "id": "3956de0b-9eda-b249-7428-28e1c561316d"
+      }
+    },
+    "states": {
+      "default": {
+        "name": "Bore Pump Control",
+        "root": true,
+        "layouts": {
+          "main": {
+            "widgets": {
+              "cd9d14fb-1078-d7a3-ef06-51b8763be6de": {
+                "sizeX": 6,
+                "sizeY": 5,
+                "row": 0,
+                "col": 6,
+                "mobileOrder": 70
+              },
+              "44012c2e-8407-fefc-9e30-7cc4a3e9522c": {
+                "sizeX": 4,
+                "sizeY": 4,
+                "row": 0,
+                "col": 12,
+                "mobileOrder": 200
+              },
+              "6aedc38c-87ba-a376-63c0-e79186f0a3e7": {
+                "sizeX": 6,
+                "sizeY": 2,
+                "row": 4,
+                "col": 0,
+                "mobileOrder": 30
+              },
+              "175f19be-de15-1639-4978-82f6ec126d91": {
+                "sizeX": 3,
+                "sizeY": 2,
+                "row": 6,
+                "col": 0,
+                "mobileOrder": 50
+              },
+              "ee3adb12-67e4-2090-affd-328f739b9182": {
+                "sizeX": 3,
+                "sizeY": 2,
+                "row": 6,
+                "col": 3,
+                "mobileOrder": 60
+              },
+              "ca9abaea-8c3e-da68-3993-588a6f7a0d29": {
+                "sizeX": 1,
+                "sizeY": 1,
+                "row": 5,
+                "col": 8,
+                "mobileOrder": 90
+              },
+              "79bb7556-0d28-c435-aec7-17451bfae2bd": {
+                "sizeX": 1,
+                "sizeY": 1,
+                "row": 5,
+                "col": 12,
+                "mobileOrder": 150
+              },
+              "e87cd3bb-7072-f1ac-def3-98aa3f9ed9a9": {
+                "sizeX": 1,
+                "sizeY": 1,
+                "row": 7,
+                "col": 12,
+                "mobileOrder": 190
+              },
+              "30318080-6e2d-a8d0-517d-4a459e182cbd": {
+                "sizeX": 1,
+                "sizeY": 1,
+                "row": 6,
+                "col": 8,
+                "mobileOrder": 110
+              },
+              "a5cc5b3b-1151-b6dd-a064-84f0b0903b6c": {
+                "sizeX": 1,
+                "sizeY": 1,
+                "row": 7,
+                "col": 8,
+                "mobileOrder": 130
+              },
+              "9582d3f4-1db4-b70a-38f4-f7c1eeacbf4c": {
+                "sizeX": 1,
+                "sizeY": 1,
+                "row": 6,
+                "col": 12,
+                "mobileOrder": 170
+              },
+              "540d09e7-4d86-4895-12cb-4d6e9a90f77e": {
+                "sizeX": 2,
+                "sizeY": 1,
+                "row": 5,
+                "col": 6,
+                "mobileOrder": 80
+              },
+              "6d22612c-61f4-73e6-03f6-dc8e35b21090": {
+                "sizeX": 3,
+                "sizeY": 1,
+                "row": 5,
+                "col": 9,
+                "mobileOrder": 140
+              },
+              "78e4b962-a7bd-bd49-155d-3326898ac7dd": {
+                "sizeX": 3,
+                "sizeY": 1,
+                "row": 7,
+                "col": 9,
+                "mobileOrder": 180
+              },
+              "f0e95403-4b76-3457-5c92-6107ac197545": {
+                "sizeX": 2,
+                "sizeY": 1,
+                "row": 6,
+                "col": 6,
+                "mobileOrder": 100
+              },
+              "1dcf1783-cac0-02a6-b2bb-35a3092cf241": {
+                "sizeX": 2,
+                "sizeY": 1,
+                "row": 7,
+                "col": 6,
+                "mobileOrder": 120
+              },
+              "1c0b8c60-9fed-f434-fb0c-9a795ed5eb34": {
+                "sizeX": 3,
+                "sizeY": 1,
+                "row": 6,
+                "col": 9,
+                "mobileOrder": 160
+              },
+              "5572b5a0-73b9-7f12-c214-ac210e0a42dc": {
+                "sizeX": 6,
+                "sizeY": 1,
+                "row": 3,
+                "col": 0,
+                "mobileOrder": 20
+              },
+              "eedcd51c-294d-7096-6cae-55a630a2a1a1": {
+                "sizeX": 6,
+                "sizeY": 3,
+                "row": 0,
+                "col": 0,
+                "mobileOrder": 10
+              },
+              "440541c2-0f22-fe52-1743-78772ffe8330": {
+                "sizeX": 8,
+                "sizeY": 6,
+                "row": 0,
+                "col": 16,
+                "mobileOrder": 220
+              },
+              "6bb4abce-eae2-6312-d613-210118d6a06e": {
+                "sizeX": 8,
+                "sizeY": 6,
+                "row": 6,
+                "col": 16,
+                "mobileOrder": 210
+              },
+              "3956de0b-9eda-b249-7428-28e1c561316d": {
+                "sizeX": 6,
+                "sizeY": 2,
+                "row": 8,
+                "col": 0,
+                "mobileOrder": 40
+              }
+            },
+            "gridSettings": {
+              "backgroundColor": "#acacad",
+              "color": "rgb(0, 0, 0)",
+              "columns": 24,
+              "margins": [
+                3,
+                3
+              ],
+              "backgroundSizeMode": "auto",
+              "autoFillHeight": false,
+              "mobileAutoFillHeight": false,
+              "mobileRowHeight": 70,
+              "backgroundImageUrl": null
+            }
+          }
+        }
+      }
+    },
+    "entityAliases": {
+      "43502bfb-e4ad-41e6-8142-0e7925669129": {
+        "id": "43502bfb-e4ad-41e6-8142-0e7925669129",
+        "alias": "pump-controller",
+        "filter": {
+          "type": "singleEntity",
+          "resolveMultiple": false,
+          "singleEntity": {
+            "entityType": "DEVICE",
+            "id": "9e4bb8e0-91cc-11ea-bfa6-5b9d9040e44c"
+          }
+        }
+      },
+      "082b5586-efdd-5c9b-6ad4-7d7bb023772c": {
+        "id": "082b5586-efdd-5c9b-6ad4-7d7bb023772c",
+        "alias": "asdf",
+        "filter": {
+          "type": "singleEntity",
+          "resolveMultiple": false,
+          "singleEntity": {
+            "entityType": "DEVICE",
+            "id": "c7b909d0-91cc-11ea-bfa6-5b9d9040e44c"
+          }
+        }
+      }
+    },
+    "timewindow": {
+      "realtime": {
+        "interval": 600000,
+        "timewindowMs": 7200000
+      },
+      "aggregation": {
+        "type": "AVG",
+        "limit": 25000
+      },
+      "hideInterval": false,
+      "hideAggregation": false,
+      "hideAggInterval": false
+    },
+    "settings": {
+      "stateControllerId": "entity",
+      "showTitle": false,
+      "showDashboardsSelect": false,
+      "showEntitiesSelect": false,
+      "showDashboardTimewindow": true,
+      "showDashboardExport": true,
+      "toolbarAlwaysOpen": false,
+      "titleColor": "rgba(0, 0, 0, 0.16)"
+    }
+  },
+  "name": "Bore Pump Control"
+}

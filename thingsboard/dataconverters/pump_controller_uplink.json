@@ -1,0 +1,9 @@
+{
+  "name": "Pump Controller Uplink",
+  "type": "UPLINK",
+  "debugMode": true,
+  "configuration": {
+    "decoder": "// Decode an uplink message from a buffer\n// payload - array of bytes\n// metadata - key/value object\n\n/** Decoder **/\n\n// Have to extract the json field values using regexps because the\n// json parser is crashing!\nconst devIdRegExp = /dev_id\"\\s?:\\s?\"([\\w-]+)/\nconst hardwareSerialRegExp = /hardware_serial\"\\s?:\\s?\"([\\w-]+)/\nconst payloadRawRegExp = /payload_raw\"\\s?:\\s?\"([\\w-]+=?=?)/\n\n// decode payload to string\nconst payloadStr = decodeToString(payload);\nconst dev_id = payloadStr.match(devIdRegExp)[1];\nconst hwSerial = payloadStr.match(hardwareSerialRegExp)[1];\nconst b64Str = payloadStr.match(payloadRawRegExp)[1];\nconst rawBytes = u_atob(b64Str);\nconst statusByte = rawBytes[0];\n\nconst pumpRunning = statusByte & 1 ? 1:0;\n\n// Result object with device/asset attributes/telemetry data\nvar result = {\n   deviceName: dev_id,\n   deviceType: \"Pump Controller\",\n   attributes: {\n       serialNumber: hwSerial,\n       integrationName: metadata.integrationName\n   },\n   telemetry: {\n        pumpRunning: pumpRunning,\n        boreLowLevel: statusByte & 2 ? 1:0,\n        softStartFail: statusByte & 4 ? 1:0,\n        pumpOverload: statusByte & 8 ? 1:0,\n        tankHighLevel: statusByte & 16 ? 1:0,\n        highPressure: statusByte & 32 ? 1:0,\n        noFlow: statusByte & 64 ? 1:0,\n        statusByte: statusByte\n   }\n};\n\n/** Helper functions **/\n\nfunction decodeToString(payload) {\n   return String.fromCharCode.apply(String, payload);\n}\n\nfunction u_atob(ascii) {\n    return Uint8Array.from(atob(ascii), c => c.charCodeAt(0));\n}\n\nreturn result;\n"
+  },
+  "additionalInfo": null
+}

@@ -1,0 +1,462 @@
+{
+  "ruleChain": {
+    "additionalInfo": null,
+    "name": "Root Rule Chain",
+    "firstRuleNodeId": null,
+    "root": false,
+    "debugMode": false,
+    "configuration": null
+  },
+  "metadata": {
+    "firstNodeIndex": 2,
+    "nodes": [
+      {
+        "additionalInfo": {
+          "layoutX": 1222,
+          "layoutY": 62
+        },
+        "type": "org.thingsboard.rule.engine.telemetry.TbMsgTimeseriesNode",
+        "name": "Save Timeseries",
+        "debugMode": true,
+        "configuration": {
+          "defaultTTL": 0
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 825,
+          "layoutY": 52
+        },
+        "type": "org.thingsboard.rule.engine.telemetry.TbMsgAttributesNode",
+        "name": "Save Client Attributes",
+        "debugMode": true,
+        "configuration": {
+          "scope": "CLIENT_SCOPE"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 298,
+          "layoutY": 159
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbMsgTypeSwitchNode",
+        "name": "Message Type Switch",
+        "debugMode": true,
+        "configuration": {
+          "version": 0
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 834,
+          "layoutY": 282
+        },
+        "type": "org.thingsboard.rule.engine.action.TbLogNode",
+        "name": "Log RPC from Device",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "return '\\nIncoming message:\\n' + JSON.stringify(msg) + '\\nIncoming metadata:\\n' + JSON.stringify(metadata);"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 825,
+          "layoutY": 379
+        },
+        "type": "org.thingsboard.rule.engine.action.TbLogNode",
+        "name": "Log Other",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return '\\nIncoming message:\\n' + JSON.stringify(msg) + '\\nIncoming metadata:\\n' + JSON.stringify(metadata);"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 830,
+          "layoutY": 465
+        },
+        "type": "org.thingsboard.rule.engine.rpc.TbSendRPCRequestNode",
+        "name": "RPC Call Request",
+        "debugMode": true,
+        "configuration": {
+          "timeoutInSeconds": 60
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 1702,
+          "layoutY": 147,
+          "description": "Check the device type to see if it is a level sensor or pump controller."
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsSwitchNode",
+        "name": "Device Type Filter",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "if (\"Pump Controller\" == metadata.deviceType) {\n    return [ metadata.deviceType ];\n}\n\nif (\"Water/Fuel Depth Level\" == metadata.deviceType) {\n    return [ \"Level Sensor\"];\n}\nreturn []; // Processing stops here."
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 431,
+          "layoutY": 537
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "XForm for Pump Controller Downlink",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "msg.command = msg.requestedPumpState ? 1 : 0;\nmsg.mode = \"MANUAL\"; // This will appear in the event log.\nreturn {msg: msg, metadata: metadata, msgType: msgType};"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 445,
+          "layoutY": 337
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "Is Pump Controller",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return metadata.deviceType == \"Pump Controller\";"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 945,
+          "layoutY": 140
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "Is Pump Controller",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return metadata.deviceType == \"Pump Controller\";"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 1368,
+          "layoutY": 254
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "XForm Message from Binary Flags",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "var newMsg = {};\r\n\r\nvar payloadBytes = atob(msg[\"Pump State\"]);\r\n\r\nvar statusByte = payloadBytes.charCodeAt(0);\r\n\r\nnewMsg.pumpRunning = (statusByte & 1) ? 1: 0;\r\nnewMsg.boreLowLevel = (statusByte & 2) ? 1: 0;\r\nnewMsg.softStartFail = (statusByte & 4) ? 1: 0;\r\nnewMsg.pumpOverload = (statusByte & 8) ? 1: 0;\r\nnewMsg.controllerRestart = (statusByte & 16) ? 1: 0;\r\nnewMsg.highPressure = (statusByte & 32) ? 1: 0;\r\nnewMsg.noFlow = (statusByte & 64) ? 1: 0;\r\n\r\nreturn {\r\n    msg: newMsg\r\n};\r\n\r\n\r\n/**\r\n * Implementation of atob() according to the HTML and Infra specs, except that\r\n * instead of throwing INVALID_CHARACTER_ERR we return null.\r\n */\r\nfunction atob(data) {\r\n  // Web IDL requires DOMStrings to just be converted using ECMAScript\r\n  // ToString, which in our case amounts to using a template literal.\r\n  //data = `${data}`;\r\n  // \"Remove all ASCII whitespace from data.\"\r\n  data = data.replace(/[ \\t\\n\\f\\r]/g, \"\");\r\n  // \"If data's length divides by 4 leaving no remainder, then: if data ends\r\n  // with one or two U+003D (=) code points, then remove them from data.\"\r\n  if (data.length % 4 === 0) {\r\n    data = data.replace(/==?$/, \"\");\r\n  }\r\n  // \"If data's length divides by 4 leaving a remainder of 1, then return\r\n  // failure.\"\r\n  //\r\n  // \"If data contains a code point that is not one of\r\n  //\r\n  // U+002B (+)\r\n  // U+002F (/)\r\n  // ASCII alphanumeric\r\n  //\r\n  // then return failure.\"\r\n  if (data.length % 4 === 1 || /[^+/0-9A-Za-z]/.test(data)) {\r\n    return null;\r\n  }\r\n  // \"Let output be an empty byte sequence.\"\r\n  var output = \"\";\r\n  // \"Let buffer be an empty buffer that can have bits appended to it.\"\r\n  //\r\n  // We append bits via left-shift and or.  accumulatedBits is used to track\r\n  // when we've gotten to 24 bits.\r\n  var buffer = 0;\r\n  var accumulatedBits = 0;\r\n  // \"Let position be a position variable for data, initially pointing at the\r\n  // start of data.\"\r\n  //\r\n  // \"While position does not point past the end of data:\"\r\n  for (var i = 0; i < data.length; i++) {\r\n    // \"Find the code point pointed to by position in the second column of\r\n    // Table 1: The Base 64 Alphabet of RFC 4648. Let n be the number given in\r\n    // the first cell of the same row.\r\n    //\r\n    // \"Append to buffer the six bits corresponding to n, most significant bit\r\n    // first.\"\r\n    //\r\n    // atobLookup() implements the table from RFC 4648.\r\n    buffer <<= 6;\r\n    buffer |= atobLookup(data[i]);\r\n    accumulatedBits += 6;\r\n    // \"If buffer has accumulated 24 bits, interpret them as three 8-bit\r\n    // big-endian numbers. Append three bytes with values equal to those\r\n    // numbers to output, in the same order, and then empty buffer.\"\r\n    if (accumulatedBits === 24) {\r\n      output += String.fromCharCode((buffer & 0xff0000) >> 16);\r\n      output += String.fromCharCode((buffer & 0xff00) >> 8);\r\n      output += String.fromCharCode(buffer & 0xff);\r\n      buffer = accumulatedBits = 0;\r\n    }\r\n    // \"Advance position by 1.\"\r\n  }\r\n  // \"If buffer is not empty, it contains either 12 or 18 bits. If it contains\r\n  // 12 bits, then discard the last four and interpret the remaining eight as\r\n  // an 8-bit big-endian number. If it contains 18 bits, then discard the last\r\n  // two and interpret the remaining 16 as two 8-bit big-endian numbers. Append\r\n  // the one or two bytes with values equal to those one or two numbers to\r\n  // output, in the same order.\"\r\n  if (accumulatedBits === 12) {\r\n    buffer >>= 4;\r\n    output += String.fromCharCode(buffer);\r\n  } else if (accumulatedBits === 18) {\r\n    buffer >>= 2;\r\n    output += String.fromCharCode((buffer & 0xff00) >> 8);\r\n    output += String.fromCharCode(buffer & 0xff);\r\n  }\r\n  // \"Return output.\"\r\n  return output;\r\n}\r\n/**\r\n * A lookup table for atob(), which converts an ASCII character to the\r\n * corresponding six-bit number.\r\n */\r\nfunction atobLookup(chr) {\r\n  if (/[A-Z]/.test(chr)) {\r\n    return chr.charCodeAt(0) - \"A\".charCodeAt(0);\r\n  }\r\n  if (/[a-z]/.test(chr)) {\r\n    return chr.charCodeAt(0) - \"a\".charCodeAt(0) + 26;\r\n  }\r\n  if (/[0-9]/.test(chr)) {\r\n    return chr.charCodeAt(0) - \"0\".charCodeAt(0) + 52;\r\n  }\r\n  if (chr === \"+\") {\r\n    return 62;\r\n  }\r\n  if (chr === \"/\") {\r\n    return 63;\r\n  }\r\n  // Throw exception; should not be hit in tests\r\n  return undefined;\r\n}"
+        }
+      },
+      {
+        "additionalInfo": {
+          "description": "Test to see if message is coming from Lora or Wi-Fi",
+          "layoutX": 1127,
+          "layoutY": 337
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsSwitchNode",
+        "name": "Protocol Switch",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "// Assume LoRaWAN unless the device has a value in its\n// protocol attribute.\nvar protocol = \"lora\";\nif (metadata.shared_protocol) {\n    protocol = metadata.shared_protocol;\n}\n\nreturn [ protocol ];"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 1025,
+          "layoutY": 226
+        },
+        "type": "org.thingsboard.rule.engine.metadata.TbGetAttributesNode",
+        "name": "Get Protocol",
+        "debugMode": true,
+        "configuration": {
+          "clientAttributeNames": [],
+          "sharedAttributeNames": [
+            "protocol"
+          ],
+          "serverAttributeNames": [
+            "requestedPumpState",
+            "requestTime",
+            "transmitStatus"
+          ],
+          "latestTsKeyNames": [],
+          "tellFailureIfAbsent": true,
+          "getLatestValueWithTs": false
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 204,
+          "layoutY": 430
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "Check If Attr Updated is Requested Pump State",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "if(msg.requestedPumpState != null){\n    return true\n}else{\n    return false\n}\n\n"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 1697,
+          "layoutY": 390
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Set Transmit Status",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "// Set msgType to save attribute\nmsgType = \"POST_ATTRIBUTES_REQUEST\";\n//var newMsg = {};\nvar lateMsg = new Date().getTime() - metadata.ss_requestTime > 630000;\nvar request = metadata.ss_requestedPumpState == 'true' ? 1 : 0;\nmsg.transmitStatus = metadata.ss_transmitStatus;\n\nif(request == msg.pumpRunning){\n    // GREEN - msg was successful\n    msg.transmitStatus = 2; \n}else{\n   if(lateMsg && msg.transmitStatus == 1){\n       // RED - msg failed to change the pump status\n       msg.transmitStatus = 0;\n   }\n}\n\nreturn {msg: msg, metadata: metadata, msgType: msgType};"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 2295,
+          "layoutY": 417
+        },
+        "type": "org.thingsboard.rule.engine.telemetry.TbMsgAttributesNode",
+        "name": "Save Transmit Status",
+        "debugMode": true,
+        "configuration": {
+          "scope": "SERVER_SCOPE"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 1829,
+          "layoutY": 546
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsSwitchNode",
+        "name": "Status Filter",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return msg.transmitStatus.toString();"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 2290,
+          "layoutY": 615,
+          "description": "Sets Server Attribute for Pump Controller after alarm."
+        },
+        "type": "org.thingsboard.rule.engine.telemetry.TbMsgAttributesNode",
+        "name": "Update Requested Pump State",
+        "debugMode": true,
+        "configuration": {
+          "scope": "SERVER_SCOPE"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 1999,
+          "layoutY": 674
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Set Requested Pump State",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "// Set msgType to save attribute\nmsgType = \"POST_ATTRIBUTES_REQUEST\";\nvar newMsg = {};\n\n // Check if the pump needs to be turned on or off, set the requestedPumpState\nif (msg.pumpRunning == 1) {\n    newMsg.requestedPumpState = true;\n}else{\n   newMsg.requestedPumpState = false; \n}\n\nreturn {msg: newMsg, metadata: metadata, msgType: msgType};\n\n\n"
+        }
+      },
+      {
+        "additionalInfo": {
+          "layoutX": 2022,
+          "layoutY": 478
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Strip Timeseries Data",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "// Set msgType to save attribute\nmsgType = \"POST_ATTRIBUTES_REQUEST\";\nvar newMsg = {};\nnewMsg.transmitStatus = msg.transmitStatus;\n\nreturn {msg: newMsg, metadata: metadata, msgType: msgType};"
+        }
+      }
+    ],
+    "connections": [
+      {
+        "fromIndex": 0,
+        "toIndex": 6,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 2,
+        "toIndex": 13,
+        "type": "Attributes Updated"
+      },
+      {
+        "fromIndex": 2,
+        "toIndex": 4,
+        "type": "Other"
+      },
+      {
+        "fromIndex": 2,
+        "toIndex": 1,
+        "type": "Post attributes"
+      },
+      {
+        "fromIndex": 2,
+        "toIndex": 9,
+        "type": "Post telemetry"
+      },
+      {
+        "fromIndex": 2,
+        "toIndex": 3,
+        "type": "RPC Request from Device"
+      },
+      {
+        "fromIndex": 2,
+        "toIndex": 8,
+        "type": "RPC Request to Device"
+      },
+      {
+        "fromIndex": 6,
+        "toIndex": 14,
+        "type": "Pump Controller"
+      },
+      {
+        "fromIndex": 8,
+        "toIndex": 5,
+        "type": "False"
+      },
+      {
+        "fromIndex": 9,
+        "toIndex": 0,
+        "type": "False"
+      },
+      {
+        "fromIndex": 9,
+        "toIndex": 12,
+        "type": "True"
+      },
+      {
+        "fromIndex": 10,
+        "toIndex": 0,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 11,
+        "toIndex": 10,
+        "type": "lora"
+      },
+      {
+        "fromIndex": 11,
+        "toIndex": 0,
+        "type": "wifi"
+      },
+      {
+        "fromIndex": 12,
+        "toIndex": 11,
+        "type": "Failure"
+      },
+      {
+        "fromIndex": 12,
+        "toIndex": 11,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 13,
+        "toIndex": 7,
+        "type": "True"
+      },
+      {
+        "fromIndex": 14,
+        "toIndex": 16,
+        "type": "Failure"
+      },
+      {
+        "fromIndex": 14,
+        "toIndex": 19,
+        "type": "Failure"
+      },
+      {
+        "fromIndex": 14,
+        "toIndex": 16,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 14,
+        "toIndex": 19,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 16,
+        "toIndex": 18,
+        "type": "2"
+      },
+      {
+        "fromIndex": 18,
+        "toIndex": 17,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 19,
+        "toIndex": 15,
+        "type": "Success"
+      }
+    ],
+    "ruleChainConnections": [
+      {
+        "fromIndex": 2,
+        "targetRuleChainId": {
+          "entityType": "RULE_CHAIN",
+          "id": "c313d140-9699-11ea-bfa6-5b9d9040e44c"
+        },
+        "additionalInfo": {
+          "description": "Pump Controller Offline Alarm",
+          "layoutX": 431,
+          "layoutY": 33,
+          "ruleChainNodeId": "rule-chain-node-22"
+        },
+        "type": "Activity Event"
+      },
+      {
+        "fromIndex": 2,
+        "targetRuleChainId": {
+          "entityType": "RULE_CHAIN",
+          "id": "c313d140-9699-11ea-bfa6-5b9d9040e44c"
+        },
+        "additionalInfo": {
+          "description": "Pump Controller Offline Alarm",
+          "layoutX": 431,
+          "layoutY": 33,
+          "ruleChainNodeId": "rule-chain-node-22"
+        },
+        "type": "Inactivity Event"
+      },
+      {
+        "fromIndex": 6,
+        "targetRuleChainId": {
+          "entityType": "RULE_CHAIN",
+          "id": "253a3c20-91d0-11ea-bfa6-5b9d9040e44c"
+        },
+        "additionalInfo": {
+          "description": "Check the water level to see if the pump needs to switch on or off.",
+          "layoutX": 2007,
+          "layoutY": 94,
+          "ruleChainNodeId": "rule-chain-node-23"
+        },
+        "type": "Level Sensor"
+      },
+      {
+        "fromIndex": 6,
+        "targetRuleChainId": {
+          "entityType": "RULE_CHAIN",
+          "id": "c313d140-9699-11ea-bfa6-5b9d9040e44c"
+        },
+        "additionalInfo": {
+          "description": "Check pump controller telemetry message for alarm conditions.",
+          "layoutX": 2006,
+          "layoutY": 256,
+          "ruleChainNodeId": "rule-chain-node-24"
+        },
+        "type": "Pump Controller"
+      },
+      {
+        "fromIndex": 7,
+        "targetRuleChainId": {
+          "entityType": "RULE_CHAIN",
+          "id": "f59b3450-942d-11ea-bfa6-5b9d9040e44c"
+        },
+        "additionalInfo": {
+          "layoutX": 751,
+          "layoutY": 558,
+          "ruleChainNodeId": "rule-chain-node-25"
+        },
+        "type": "Success"
+      }
+    ]
+  }
+}

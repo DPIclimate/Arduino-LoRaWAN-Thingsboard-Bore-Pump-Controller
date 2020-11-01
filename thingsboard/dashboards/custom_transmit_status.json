@@ -1,0 +1,16 @@
+{
+  "alias": "custom_transmit_status",
+  "name": "Custom Transmit Status",
+  "descriptor": {
+    "type": "latest",
+    "sizeX": 4.5,
+    "sizeY": 3,
+    "resources": [],
+    "templateHtml": "<form>\n    <div>\n        <div class=\"transmit-status-widget\">\n            <p id=\"transmit-title\">Transmit Status:</p>\n        </div>\n        <div class=\"transmit-status-widget\"\n            id=\"transmit-status\">\n\n        </div>\n    </div>\n</form>",
+    "templateCss": "#transmit-status{\n    font-size:16px;\n    text-align: center;\n}\n#transmit-title{\n    font-size: 16px;\n}\n.transmit-status-widget{\n    margin-top: -20px;\n    display: inline-block;\n}\n",
+    "controllerScript": "let $scope;\nlet dataArray;\nlet attributeService;\nlet types;\n\n// Runs on initiation of the Widget\nself.onInit = function() {\n    // Setup as per the default widgets for updating server attributes\n    $scope = self.ctx.$scope;\n    attributeService = $scope.$injector.get(\n        'attributeService');\n    types = $scope.$injector.get('types');\n\n};\n\n// When the server attribute is updated, update the widget\nself.onDataUpdated = function() {\n    switch (self.ctx.data[0].data[0][1]) {\n        case 0:\n            document.getElementById(\"transmit-status\")\n                .style.backgroundColor = \"#ff4545\";\n            document.getElementById(\"transmit-status\")\n                .textContent = \"Failed\";\n            break;\n        case 1:\n            document.getElementById(\"transmit-status\")\n                .style.backgroundColor = \"#ffe878\";\n            document.getElementById(\"transmit-status\")\n                .textContent = \"In-Transit\";\n            break;\n        case 2:\n            document.getElementById(\"transmit-status\")\n                .style.backgroundColor = \"#81f785\";\n            document.getElementById(\"transmit-status\")\n                .textContent = \"Successful\";\n            break;\n    }\n\n\n}",
+    "settingsSchema": "{\n    \"schema\": {\n        \"type\": \"object\",\n        \"title\": \"TransmitStatusDisplay\",\n        \"properties\": {\n            \"widgetTitle\": {\n                \"title\": \"Timer Type Widget\",\n                \"type\": \"string\",\n                \"default\": \"\"\n            }\n        },\n        \"required\": []\n    },\n    \"form\": [\n        \"widgetTitle\"\n    ]\n}",
+    "dataKeySettingsSchema": "{}\n",
+    "defaultConfig": "{\"datasources\":[{\"type\":\"function\",\"name\":\"function\",\"dataKeys\":[{\"name\":\"f(x)\",\"type\":\"function\",\"label\":\"Random\",\"color\":\"#2196f3\",\"settings\":{},\"_hash\":0.15479322438769105,\"funcBody\":\"var value = Math.floor(Math.random()*3)+3;\\nreturn value;\"}]}],\"timewindow\":{\"realtime\":{\"timewindowMs\":60000}},\"showTitle\":true,\"backgroundColor\":\"#fff\",\"color\":\"rgba(0, 0, 0, 0.87)\",\"padding\":\"8px\",\"settings\":{\"showResultMessage\":true,\"showLabel\":true},\"title\":\"Custom Transmit Status\",\"dropShadow\":true,\"enableFullscreen\":false,\"widgetStyle\":{},\"titleStyle\":{\"fontSize\":\"16px\",\"fontWeight\":400},\"useDashboardTimewindow\":true,\"showLegend\":false,\"actions\":{},\"showTitleIcon\":false,\"titleIcon\":\"more_horiz\",\"iconColor\":\"rgba(0, 0, 0, 0.87)\",\"iconSize\":\"24px\",\"titleTooltip\":\"\",\"displayTimewindow\":true}"
+  }
+}
